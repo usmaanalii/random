@@ -1,0 +1,17 @@
+{
+  "name": "gatsby-tutorial",
+  "version": "1.0.0",
+  "description": "Official gatsby website tutorial",
+  "main": "none",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gatsby"
+  ],
+  "author": "Usmaan Ali",
+  "license": "ISC",
+  "devDependencies": {
+    "gatsby-cli": "^1.0.5"
+  }
+}
