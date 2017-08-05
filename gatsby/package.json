@@ -12,6 +12,11 @@
   "author": "Usmaan Ali",
   "license": "ISC",
   "devDependencies": {
-    "gatsby-cli": "^1.0.5"
+    "eslint": "^4.3.0",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.1.0",
+    "gatsby-plugin-typography": "^1.7.2"
   }
 }
