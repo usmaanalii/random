@@ -1,0 +1,19 @@
+{
+  "name": "graphql-official-tutorial",
+  "version": "1.0.0",
+  "description": "Working through the official graphql tutorial",
+  "main": "none",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "graphql"
+  ],
+  "author": "Usmaan Ali",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.4",
+    "express-graphql": "^0.6.7",
+    "graphql": "^0.10.5"
+  }
+}
