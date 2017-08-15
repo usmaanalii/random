@@ -2,22 +2,21 @@ import unittest
 import os
 import tempfile
 import app
+import json
 
 
 class BasicTestCase(unittest.TestCase):
-    """docstring for BasicTestCase."""
 
     def test_index(self):
-        """Initial test. Ensure flask was set up correctly"""
+        """initial test. ensure flask was set up correctly"""
         tester = app.app.test_client(self)
         response = tester.get('/', content_type='html/text')
-
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
     def test_database(self):
-        """Initial test. Ensure the database exists"""
+        """initial test. ensure that the database exists"""
         tester = os.path.exists("flaskr.db")
-        self.assertTrue(tester)
+        self.assertEqual(tester, True)
 
 
 class FlaskrTestCase(unittest.TestCase):
@@ -27,11 +26,10 @@ class FlaskrTestCase(unittest.TestCase):
         self.db_fd, app.app.config['DATABASE'] = tempfile.mkstemp()
         app.app.config['TESTING'] = True
         self.app = app.app.test_client()
-
         app.init_db()
 
     def tearDown(self):
-        """Destroy a blank temp database after each test"""
+        """Destroy blank temp database after each test"""
         os.close(self.db_fd)
         os.unlink(app.app.config['DATABASE'])
 
@@ -51,8 +49,7 @@ class FlaskrTestCase(unittest.TestCase):
     def test_empty_db(self):
         """Ensure database is blank"""
         rv = self.app.get('/')
-
-        assert b'No entries here so far' in rv.data
+        assert b'No entries yet. Add some!' in rv.data
 
     def test_login_logout(self):
         """Test login and logout using helper functions"""
@@ -61,15 +58,13 @@ class FlaskrTestCase(unittest.TestCase):
             app.app.config['PASSWORD']
         )
         assert b'You were logged in' in rv.data
-        rv = self.logout
+        rv = self.logout()
         assert b'You were logged out' in rv.data
-
         rv = self.login(
             app.app.config['USERNAME'] + 'x',
             app.app.config['PASSWORD']
         )
         assert b'Invalid username' in rv.data
-
         rv = self.login(
             app.app.config['USERNAME'],
             app.app.config['PASSWORD'] + 'x'
@@ -86,10 +81,16 @@ class FlaskrTestCase(unittest.TestCase):
             title='<Hello>',
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
-
         assert b'No entries here so far' not in rv.data
-        assert b'&lt;Hello&gt;' not in rv.data
-        assert b'<strong>HTML</strong> allowed here' not in rv.data
+        assert b'&lt;Hello&gt;' in rv.data
+        assert b'<strong>HTML</strong> allowed here' in rv.data
+
+    def test_delete_message(self):
+        """Ensure the messages are being deleted"""
+        rv = self.app.get('/delete/1')
+        data = json.loads((rv.data).decode('utf-8'))
+
+        self.assertEqual(data['status'], 1)
 
 
 if __name__ == '__main__':
