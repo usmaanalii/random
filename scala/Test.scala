@@ -83,169 +83,202 @@ object Test extends App {
     Person("Paul", "Jameson", Some(Position("Senior Manager", Some(Company("Microsoft", Some(1973)))))),
     Person("Christopher", "Bulkes", Some(Position("Director", Some(Company("Bulkes Law Office"))))),
     Person("Amy", "Adamson", Some(Position("Paralegal", Some(Company("IBM", Some(1881)))))))
-}
+    
+    /**
+     *
+     * Fill in all of the following expressions.
+     *
+     */
 
-/**
- *
- * Fill in all of the following expressions.
- *
- */
+    // Get companies that have more than 1 employee
+    // Get the people who work at those companies
 
-// Get companies that have more than 1 employee
-// Get the people who work at those companies
+    /** Example: find the first person in the list. **/
+    val firstPerson: Option[Person] =
+      people.headOption
 
-/** Example: find the first person in the list. **/
-val firstPerson: Option[Person] =
-  people.headOption
+    /** All (unique) companies. **/
+    val allCompanies: Set[Company] =
+      people.flatMap(_.position.flatMap(_.company)).toSet
 
-/** All (unique) companies. **/
-val allCompanies: Set[Company] =
-  people.flatMap(_.position.flatMap(_.company)).toSet
+    /** List people as "LastName, Initial" in alphabetical order. **/
+    val alphabeticalPeople: List[String] =
+      people.sortBy(_.lastName)
+            .map(person => s"${person.lastName}, ${person.firstName(0)}")
 
-/** List people as "LastName, Initial" in alphabetical order. **/
-val alphabeticalPeople: List[String] =
-  people.sortBy(_.lastName)
-        .map(person => s"${person.lastName}, ${person.firstName(0)}")
+    /** People with a first name of less than 4 characters. **/
+    val shortFirstName: Set[Person] =
+      people.collect{ case person if person.firstName.length() < 4 => person }
+            .toSet
 
-/** People with a first name of less than 4 characters. **/
-val shortFirstName: Set[Person] =
-  people.collect{ case person if person.firstName.length() < 4 => person }
-        .toSet
+    /** Count the number of employees in company `c`. **/
+    def employeeCount(c: Company): Int =
+      people.flatMap(_.position.flatMap(_.company)
+            .map(company => company.name))
+            .count(_ == c.name)
 
-/** Count the number of employees in company `c`. **/
-def employeeCount(c: Company): Int =
-  people.flatMap(_.position.flatMap(_.company)
-        .map(company => company.name))
-        .count(_ == c.name)
+    /** Number of employees per company. **/
+    val employeesPerCompany: Map[Company, Int] =
+      people.flatMap(_.position.flatMap(_.company))
+            .groupBy(identity)
+            .mapValues(_.size)
 
-employeeCount(Company("IBM"))
+    /** List of people working for companies with at least one other employee. **/
+    /**
+     * I APOLOGIZE FOR THIS ABOMINATION!!!!!! (FOUND IT VERY DIFFICULT 😩)
+     */
+    val corporateEmployees: Set[Person] =
+        people.filter((person: Person) => person.position != None)
+              .filter((person: Person) => person.position.get.company != None)
+              .filter((person: Person) => people.flatMap(_.position.flatMap(_.company))
+                                                .groupBy(identity)
+                                                .collect{ case (x, List(_,_,_*)) => x.name }
+                                                .toList
+                                                .contains(person.position.get.company.get.name)).toSet
 
-/** Number of employees per company. **/
-val employeesPerCompany: Map[Company, Int] =
-  people.flatMap(_.position.flatMap(_.company))
+    /** Companies founded before 1900. **/
+    val historicalCompanies: Set[Company] =
+      people.flatMap(_.position.flatMap(_.company))
+            .filter(_.foundedYear.getOrElse(0) < 1900)
+            .toSet
+
+    /** Titles held by at least 2 people. **/
+
+    /**
+     * NOTE:
+     *      - Solution is inefficient
+     *      - Try to come up with a better solution
+     */
+    val popularPositionTitles: Set[String] =
+      people.collect { case x if x.position.isDefined => x.position }
+        .map(_.get.title) // get is okay here since because of isDefined
         .groupBy(identity)
         .mapValues(_.size)
+        .filter((x) => x._2 > 1)
+        .keySet
 
-/** List of people working for companies with at least one other employee. **/
-/**
- * I APOLOGIZE FOR THIS ABOMINATION!!!!!! (FOUND IT VERY DIFFICULT 😩)
- */
-val corporateEmployees: Set[Person] =
-    people.filter((person: Person) => person.position != None)
-          .filter((person: Person) => person.position.get.company != None)
-          .filter((person: Person) => people.flatMap(_.position.flatMap(_.company))
-                                            .groupBy(identity)
-                                            .collect{ case (x, List(_,_,_*)) => x.name }
-                                            .toList
-                                            .contains(person.position.get.company.get.name))
+    /** Top 5 letters in given names. **/
+    /**
+     * NOTE:
+     *      - I assumed since it states 'given names' that it should have been
+     *        a function
+     */
 
-/** Companies founded before 1900. **/
-val historicalCompanies: Set[Company] =
-  people.flatMap(_.position.flatMap(_.company))
-        .filter(_.foundedYear.getOrElse(0) < 1900)
-        .toSet
+    def givenNameLetterTop5(s: String): Vector[(Char, Int)] =
+      s.groupBy(_.toChar)
+        .mapValues(_.size)
+        .toSeq
+        .sortWith(_._2 > _._2)
+        .take(5)
+        .to[Vector]
 
-/** Titles held by at least 2 people. **/
+    /**
+     * `titleOfPerson()` is a method that will return the job title
+     * of a particular person. A call to this method may incur side effects
+     * that are not obvious if looking at its signature.
+     *
+     * Briefly summarise your assessment of the method and propose changes.
+     * You may want to investigate documentation of the methods involved.
+     */
+    def titleOfPerson(person: Person): String =
+      /**
+       * - If the title doesn't exist then a NoSuchElementException will be raised
+       *   which can disrupt the program
+       * - Using getOrElse instead of get, would allow you to provide a 'fallback'
+       *   value which would avoid the Exception being raised thus allowing
+       *   a better flow of the program
+       */
+      person.position.get.title
 
-/**
- * NOTE:
- *      - Solution is inefficient
- *      - Try to come up with a better solution
- */
-val popularPositionTitles: Set[String] =
-  people.collect { case x if x.position.isDefined => x.position }
-    .map(_.get.title) // get is okay here since because of isDefined
-    .groupBy(identity)
-    .mapValues(_.size)
-    .filter((x) => x._2 > 1)
-    .keySet
+    /**
+     * `parsePersonFromString()` is a method that will parse a Person
+     * instance from a first-last name string such as "Paul Freeman".
+     * It must conform to the following criteria:
+     *
+     * - A valid input is of the form "{firstName} {lastName}".
+     * - A person must have a non-empty first and last name.
+     * - The name must have been be capitalised.
+     * - The method must return an instance of Person, but this may be wrapped
+     *   in another type (e.g. Vector, Option, Either, Try).
+     * - The caller of the method must be able to retrieve a human-readable
+     *   error message if the name is non-conformant.
+     *
+     * Implement the method and declare its output type. Take care to
+     * demonstrate your implementation in the final section below.
+     */
 
-/** Top 5 letters in given names. **/
-/**
- * NOTE:
- *      - I assumed since it states 'given names' that it should have been
- *        a function
- */
+    case class FailResult(reason: String)
 
-def givenNameLetterTop5(s: String): Vector[(Char, Int)] =
-  s.groupBy(_.toChar)
-    .mapValues(_.size)
-    .toSeq
-    .sortWith(_._2 > _._2)
-    .take(5)
-    .to[Vector]
-
-givenNameLetterTop5("Alibabasuyakamzxxhxosssuuxyxyxbazhgyisagclhnaalal")
-/**
- * `titleOfPerson()` is a method that will return the job title
- * of a particular person. A call to this method may incur side effects
- * that are not obvious if looking at its signature.
- *
- * Briefly summarise your assessment of the method and propose changes.
- * You may want to investigate documentation of the methods involved.
- */
-def titleOfPerson(person: Person): String =
-  /**
-   * - If the title doesn't exist then a NoSuchElementException will be raised
-   *   which can disrupt the program
-   * - Using getOrElse instead of get, would allow you to provide a 'fallback'
-   *   value which would avoid the Exception being raised thus allowing
-   *   a better flow of the program
-   */
-  person.position.get.title
-
-/**
- * `parsePersonFromString()` is a method that will parse a Person
- * instance from a first-last name string such as "Paul Freeman".
- * It must conform to the following criteria:
- *
- * - A valid input is of the form "{firstName} {lastName}".
- * - A person must have a non-empty first and last name.
- * - The name must have been be capitalised.
- * - The method must return an instance of Person, but this may be wrapped
- *   in another type (e.g. Vector, Option, Either, Try).
- * - The caller of the method must be able to retrieve a human-readable
- *   error message if the name is non-conformant.
- *
- * Implement the method and declare its output type. Take care to
- * demonstrate your implementation in the final section below.
- */
-
-case class FailResult(reason: String)
-
-/**
- * - To get the Person object as an option, call .right.toOption on the result
- * @type {[type]}
- */
-def parsePersonFromString(string: String): Either[FailResult, Person] = {
-    val singleSpace = (x: String) => x.split("").count(_ == " ") == 1
-    val checkCapital = (x: String) => x.charAt(0) == x.toUpperCase.charAt(0)
-    val nameCheck = (x: String) => (singleSpace(x) && checkCapital(x.split(" ")(0))
-                                   && checkCapital(x.split(" ")(1)))
-    
-    val result = string match {
-        case a if a == " " => Left(FailResult("Edge case needs better solution"))
-        case b if !singleSpace(b) => Left(FailResult("Provide names in the form {first} {last}"))
-        case c if !checkCapital(c) => Left(FailResult("First name needs to be capitalised"))
-        case d if !checkCapital(d.split(" ")(1)) => Left(FailResult("Second name needs to be capitalised"))
-        case e if nameCheck(e) => Right(Person(e.split(" ")(0), e.split(" ")(1)))
+    /**
+     * - To get the Person object as an option, call .right.toOption on the result
+     * @type {[type]}
+     */
+    def parsePersonFromString(string: String): Either[FailResult, Person] = {
+        // Checks to see if the string only has a single space in it
+        val singleSpace = (x: String) => x.split("").count(_ == " ") == 1
+        // Checks to see if a given string is capitalised
+        val checkCapital = (x: String) => x.charAt(0) == x.toUpperCase.charAt(0)
+        // Checks to see if a string conforms to both previous conditions
+        // it applies checkCapital to both the first and second names
+        val nameCheck = (x: String) => (singleSpace(x) && checkCapital(x.split(" ")(0))
+                                       && checkCapital(x.split(" ")(1)))
+        
+        val result = string match {
+            case a if a == " " => Left(FailResult("Edge case needs better solution"))
+            case b if !singleSpace(b) => Left(FailResult("Provide names in the form {first} {last}"))
+            case c if !checkCapital(c) => Left(FailResult("First name needs to be capitalised"))
+            case d if !checkCapital(d.split(" ")(1)) => Left(FailResult("Second name needs to be capitalised"))
+            case e if nameCheck(e) => Right(Person(e.split(" ")(0), e.split(" ")(1)))
+        }
+        
+        result
     }
+
+    /** Visualise all of the above results in standard output. **/
+
+    println("Results:")
+    println("")
+
+    println("First person in the list: ")
+    println(firstPerson.getOrElse("(unknown)"))
+    println("")
     
-    result
+    println("All Companies: ")
+    println(allCompanies)
+    println("")
+    
+    println("People in alphabetical order (): ")
+    println(alphabeticalPeople)
+    println("")
+    
+    println("People with a short first name: ")
+    println(shortFirstName)
+    println("")
+    
+    println("Number of employyes in IBM: ")
+    println(employeeCount(Company("IBM")))
+    println("")
+    
+    println("Number of employyes per company: ")
+    println(employeesPerCompany)
+    println("")
+    
+    println("People working with others: ")
+    println(corporateEmployees)
+    println("")
+    
+    println("Companies founded before 1900: ")
+    println(historicalCompanies)
+    println("")
+    
+    println("Titles held by more than two people: ")
+    println(popularPositionTitles)
+    println("")
+    
+    println("Top five letters in 'Alibabasuyakamzxxhxosssuuxyxyxbazhgyisagclhnaalal': ")
+    println(givenNameLetterTop5("Alibabasuyakamzxxhxosssuuxyxyxbazhgyisagclhnaalal"))
+    println("")
+    
+    println("parsePersonFromString returns (with methods .right.toOption called): ")
+    println(parsePersonFromString("Usmaan Ali").right.toOption)
 }
-
-parsePersonFromString("Usmaan  Ali")
-parsePersonFromString(" Usmaan Ali")
-parsePersonFromString("Usmaan Ali ")
-parsePersonFromString("usmaan Ali")
-parsePersonFromString("Usmaan ali")
-parsePersonFromString("Usmaan Ali").right.toOption
-
-
-/** Visualise all of the above results in standard output. **/
-
-println("Results:")
-println("")
-
-print("First person in the list: ")
-println(firstPerson.getOrElse("(unknown)"))
