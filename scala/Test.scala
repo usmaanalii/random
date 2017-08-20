@@ -6,7 +6,7 @@
  */
 
 /**
- * Notes taken from the official Scala documentation
+ * Notes below were taken from the official Scala documentation
  * https://docs.scala-lang.org/tour/
  */
 
@@ -244,15 +244,15 @@ object Test extends App {
     println("")
     
     println("All Companies: ")
-    println(allCompanies)
+    println(allCompanies.map(println))
     println("")
     
     println("People in alphabetical order (): ")
-    println(alphabeticalPeople)
+    println(alphabeticalPeople.map(println))
     println("")
     
     println("People with a short first name: ")
-    println(shortFirstName)
+    println(shortFirstName.map(println))
     println("")
     
     println("Number of employyes in IBM: ")
@@ -260,23 +260,23 @@ object Test extends App {
     println("")
     
     println("Number of employyes per company: ")
-    println(employeesPerCompany)
+    println(employeesPerCompany.map(println))
     println("")
     
     println("People working with others: ")
-    println(corporateEmployees)
+    println(corporateEmployees.map(println))
     println("")
     
     println("Companies founded before 1900: ")
-    println(historicalCompanies)
+    println(historicalCompanies.map(println))
     println("")
     
     println("Titles held by more than two people: ")
-    println(popularPositionTitles)
+    println(popularPositionTitles.map(println))
     println("")
     
     println("Top five letters in 'Alibabasuyakamzxxhxosssuuxyxyxbazhgyisagclhnaalal': ")
-    println(givenNameLetterTop5("Alibabasuyakamzxxhxosssuuxyxyxbazhgyisagclhnaalal"))
+    println(givenNameLetterTop5("Alibabasuyakamzxxhxosssuuxyxyxbazhgyisagclhnaalal").map(println))
     println("")
     
     println("parsePersonFromString returns (with methods .right.toOption called): ")
