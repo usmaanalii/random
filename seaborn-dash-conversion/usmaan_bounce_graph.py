@@ -20,6 +20,7 @@ sns.set_palette(col_list + [grey_col])
 ################################
 # NOTE: pysql_code.py goes here.
 ################################
+
 df = pd.read_csv('usmaan_test_data.csv')
 
 # add count of delivery number
