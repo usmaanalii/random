@@ -1,0 +1,25 @@
+{
+  "name": "plotly-react-tutorial",
+  "version": "1.0.0",
+  "description": "Plotly react tutorial for building plotly dash components",
+  "main": "none",
+  "dependencies": {},
+  "devDependencies": {
+    "create-react-app": "^1.4.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usyyy/random/tree/master/seaborn-dash-conversion/plotly-react-tutorial"
+  },
+  "keywords": [
+    "plotly",
+    "react",
+    "plotly dash",
+    "python dash"
+  ],
+  "author": "Usmaan Ali",
+  "license": "ISC"
+}
