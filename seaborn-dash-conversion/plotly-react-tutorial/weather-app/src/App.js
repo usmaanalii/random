@@ -1,36 +1,35 @@
 import React from 'react';
 import './App.css';
 import xhr from 'xhr';
+import {connect} from 'react-redux';
 
-import Plot from './Plot.js'
+import Plot from './Plot';
+import {
+  changeLocation,
+  fetchData,
+  setData,
+  setDates,
+  setTemps,
+  setSelectedDate,
+  setSelectedTemp
+} from './actions';
 
 class App extends React.Component {
-  state = {
-    location: '',
-    data: {},
-    dates: [],
-    temps: [],
-    selected: {
-      date: '',
-      temp: null
-    }
-  };
+  fetchData = (evt) => {
+    evt.preventDefault();
 
-  fetchData = (event) => {
-    event.preventDefault();
-    
-    var location = encodeURIComponent(this.state.location);
-    
+    var location = encodeURIComponent(this.props.location);
+
     var urlPrefix = 'http://api.openweathermap.org/data/2.5/forecast?q=';
     var urlSuffix = '&APPID=50df8e915277555b2d85b37990ee5ba9&units=metric';
     var url = urlPrefix + location + urlSuffix;
     
-    var self = this; 
-    // because this will change as it enters the function below
-    
+    var self = this;
+
     xhr({
       url: url
-    }, function (error, data) {
+    }, function(err, data) {
+
       var body = JSON.parse(data.body);
       var list = body.list;
       var dates = [];
@@ -39,95 +38,70 @@ class App extends React.Component {
         dates.push(list[i].dt_txt);
         temps.push(list[i].main.temp);
       }
-      self.setState({
-        data: body,
-        dates: dates,
-        temps: temps,
-        selected: {
-          date: '',
-          temp: null
-        }
-      });
+
+      self.props.dispatch(setData(body));
+      self.props.dispatch(setDates(dates));
+      self.props.dispatch(setTemps(temps));
+      self.props.dispatch(setSelectedDate(''));
+      self.props.dispatch(setSelectedTemp(null));
     });
   };
 
-  changeLocation = (event) => {
-    this.setState({
-      location: event.target.value
-    });
-  };
-  
   onPlotClick = (data) => {
     if (data.points) {
-      this.setState({
-        selected: {
-          date: data.points[0].x,
-          temp: data.points[0].y
-        }
-      });
+      var number = data.points[0].pointNumber;
+      this.props.dispatch(setSelectedDate(this.props.dates[number]));
+      this.props.dispatch(setSelectedTemp(this.props.temps[number]))
     }
+  };
+
+  changeLocation = (evt) => {
+    this.props.dispatch(changeLocation(evt.target.value));
   };
 
   render() {
     var currentTemp = 'not loaded yet';
-    if (this.state.data.list) {
-      currentTemp = this.state.data.list[0].main.temp;
+    if (this.props.data.list) {
+      currentTemp = this.props.data.list[0].main.temp;
     }
     return (
       <div>
         <h1>Weather</h1>
         <form onSubmit={this.fetchData}>
-          <label>I want to know the weather for
-            <input
-              placeholder={"City, Country"}
-              type="text"
-              value={this.state.location}
-              onChange={this.changeLocation}
-            />
+          <label>City, Country
+            <input placeholder={"City, Country"} type="text" value={this.props.location} onChange={this.changeLocation}/>
           </label>
         </form>
         {/*
           Render the current temperature and the forecast if we have data
-          otherwise null  
-          */}
-          {(this.state.data.list) ? (
-            <div className="wrapper">
-              {/* Render the current temperature if no specified date */}
-              <p className="temp-wrapper">
-                <span className="temp">
-                  { this.state.selected.temp ? this.state.selected.temp : currentTemp }
-                </span>
-                <span className="temp-symbol">°C</span>
-                <span className="temp-date">
-                  { this.state.selected.temp ? this.state.selected.date : '' }
-                </span>
-              </p>
+          otherwise return null
+        */}
+        {(this.props.data.list)
+          ? (
+            <div>
+              {/* Render the current temperature if no specific date is selected */}
+              {(this.props.selected.temp)
+                ? (
+                  <p>The temperature on {this.props.selected.date}
+                    will be {this.props.selected.temp}°C</p>
+                )
+                : (
+                  <p>The current temperature is {currentTemp}°C!</p>
+                )}
               <h2>Forecast</h2>
-              <Plot
-                xData={this.state.dates}
-                yData={this.state.temps}
-                onPlotClick={this.onPlotClick}
-                type="scatter"
-              />
+              <Plot xData={this.props.dates} yData={this.props.temps} onPlotClick={this.onPlotClick} type="scatter"/>
             </div>
-          ) : null}
-    
-    </div>
+          )
+          : null}
+
+      </div>
     );
   }
 }
 
-export default App;
+// Since we want to have the entire state anyway, we can simply return it as is!
+function mapStateToProps(state) {
+  return state;
+}
 
-/**
- * - You want to store the value of the text input in our local component
- *   state, to be able to grab it from the fetchData() method
- * - This makes our input a "controlled input"
- *
- * - Store the currently entered location in *this.state.location*
- * - Add a utility method called *changeLocation*, that is called onChange
- *   of the text input, setting the state to the current state
- *
- * - When saving anything to local state, the variable needs to be predefined
- *   hence the state = { location: '' } code
- */
+export default connect(mapStateToProps)(App);
