@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import xhr from 'xhr';
 import {connect} from 'react-redux';
 
 import Plot from './Plot';
@@ -15,6 +14,7 @@ import {
 } from './actions';
 
 class App extends React.Component {
+  
   fetchData = (evt) => {
     evt.preventDefault();
 
@@ -24,29 +24,10 @@ class App extends React.Component {
     var urlSuffix = '&APPID=50df8e915277555b2d85b37990ee5ba9&units=metric';
     var url = urlPrefix + location + urlSuffix;
     
-    var self = this;
-
-    xhr({
-      url: url
-    }, function(err, data) {
-
-      var body = JSON.parse(data.body);
-      var list = body.list;
-      var dates = [];
-      var temps = [];
-      for (var i = 0; i < list.length; i++) {
-        dates.push(list[i].dt_txt);
-        temps.push(list[i].main.temp);
-      }
-
-      self.props.dispatch(setData(body));
-      self.props.dispatch(setDates(dates));
-      self.props.dispatch(setTemps(temps));
-      self.props.dispatch(setSelectedDate(''));
-      self.props.dispatch(setSelectedTemp(null));
-    });
+    this.props.dispatch(fetchData(url));
   };
-
+  
+  
   onPlotClick = (data) => {
     if (data.points) {
       var number = data.points[0].pointNumber;
