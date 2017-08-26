@@ -6,9 +6,6 @@ import Plot from './Plot';
 import {
   changeLocation,
   fetchData,
-  setData,
-  setDates,
-  setTemps,
   setSelectedDate,
   setSelectedTemp
 } from './actions';

@@ -14,7 +14,7 @@ import App from './App';
 
 import registerServiceWorker from './registerServiceWorker';
 
-import mainReducer from './reducers';
+import mainReducer from './reducer';
 
 var store = createStore(
   mainReducer,
