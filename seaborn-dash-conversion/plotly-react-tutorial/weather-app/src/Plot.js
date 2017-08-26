@@ -40,7 +40,6 @@ class Plot extends React.Component {
   }
 
   render() {
-    console.log('RENDER PLOT');
     return (
       <div id="plot"></div>
     );
