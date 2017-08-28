@@ -12,7 +12,7 @@ df1952 = df[df.year == 1952]
 
 df.head(2)
 
-layout = go.Layout(
+layout = dict(
     width=600,
     height=600
 )
