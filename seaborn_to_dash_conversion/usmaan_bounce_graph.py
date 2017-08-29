@@ -28,6 +28,7 @@ df['deliv'] = [n + 1 for n in range(len(df))]
 
 # drop null bounces
 df = df.dropna(subset=['bvrz']).copy()
+df.head()
 
 # draw something
 fig, ax = plt.subplots(figsize=(8, 4))
@@ -49,7 +50,10 @@ for p in (1, 0):
         line_kws={'color': col_list[3 - p], 'lw': 4, 'alpha': 0.9},
         label=['pace' if p == 1 else 'spin'][0]
     )
-
+    np.percentile(df[df.pace == 0], 99)
+    np.percentile(df[df.pace == 0], 1)
+    np.percentile(df[df.pace == 1], 99)
+    np.percentile(df[df.pace == 1], 1)
     if bvr_max is None or np.percentile(df2['bvrz'], 99) > bvr_max:
         bvr_max = np.percentile(df2['bvrz'], 99)
 
