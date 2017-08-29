@@ -18,7 +18,7 @@ colors = dict(
     spin='#367D9F'
 )
 
-# Data 
+# Data
 df = pd.read_csv('../usmaan_test_data.csv')
 
 # add count of delivery number
@@ -26,28 +26,27 @@ df['deliv'] = [n + 1 for n in range(len(df))]
 
 # drop null bounces
 df = df.dropna(subset=['bvrz']).copy()
-df.head(2)
 
 # bvrz values
 pace_bvrz_values = df.bvrz[df.pace == 1]
-pace_bvrz_values.head(2)
-
 spin_bvrz_values = df.bvrz[df.pace == 0]
-spin_bvrz_values.head(2)
 
 # value counts
 pace_deliv_values = df.deliv[df.pace == 1]
-pace_deliv_values.head(2)
-
 spin_deliv_values = df.deliv[df.pace == 0]
-spin_deliv_values.head(2)
 
 # regression values
 pace_slope, pace_intercept, pace_r_value, pace_p_value, pace_std_err = stats.linregress(
     pace_deliv_values, pace_bvrz_values)
 
+len(pace_deliv_values)
+
 spin_slope, spin_intercept, spin_r_value, spin_p_value, spin_std_err = stats.linregress(
     spin_deliv_values, spin_bvrz_values)
+
+len(spin_deliv_values)
+
+len(df)
 
 # pace scatter plot values
 trace1 = go.Scatter(
@@ -117,15 +116,40 @@ app.layout = html.Div(style={}, children=[
             'data': [trace1, trace2, trace3, trace4],
             'layout': go.Layout(
                 xaxis=dict(
-                    title="Match Delivery",
-                    range=[-30, 1400],
-                    showline=False,
-                    zeroline=False
+                    title='Match Delivery',
+                    autotick=False,
+                    zeroline=False,
+                    tick0=0,
+                    dtick=200,
                 ),
                 yaxis=dict(
-                    title="Bounce Velocity Ratio",
+                    title='Bounce Velocity Ratio',
                     range=[0.38, 0.75]
-                )
+                ),
+                shapes=[
+                    {
+                        'type': 'line',
+                        'x0': 800,
+                        'y0': 0.4,
+                        'x1': 800,
+                        'y1': 0.8,
+                        'line': {
+                            'width': 1,
+                            'color': '#888886'
+                        }
+                    },
+                    {
+                        'type': 'line',
+                        'x0': 1100,
+                        'y0': 0.4,
+                        'x1': 1100,
+                        'y1': 0.8,
+                        'line': {
+                            'width': 1,
+                            'color': '#888886'
+                        }
+                    }
+                ]
             )
         }
     )
