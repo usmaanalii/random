@@ -5,13 +5,7 @@ import plotly.graph_objs as go
 import pandas as pd
 from scipy import stats
 
-import os
-os.chdir('/Applications/XAMPP/xamppfiles/htdocs/xampp/repos/random/seaborn_to_dash_conversion/other')
-
 app = dash.Dash()
-
-app.css.append_css(
-    {"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
 colors = dict(
     pace='#D9437D',
@@ -39,14 +33,8 @@ spin_deliv_values = df.deliv[df.pace == 0]
 pace_slope, pace_intercept, pace_r_value, pace_p_value, pace_std_err = stats.linregress(
     pace_deliv_values, pace_bvrz_values)
 
-len(pace_deliv_values)
-
 spin_slope, spin_intercept, spin_r_value, spin_p_value, spin_std_err = stats.linregress(
     spin_deliv_values, spin_bvrz_values)
-
-len(spin_deliv_values)
-
-len(df)
 
 # pace scatter plot values
 trace1 = go.Scatter(
@@ -70,6 +58,7 @@ trace2 = go.Scatter(
     marker=dict(
         color=colors['pace']
     ),
+    hoverinfo='none',
     showlegend=False
 )
 
@@ -95,6 +84,7 @@ trace4 = go.Scatter(
     marker=dict(
         color=colors['spin']
     ),
+    hoverinfo='none',
     showlegend=False
 )
 
