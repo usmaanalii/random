@@ -5,10 +5,18 @@ import plotly.graph_objs as go
 import pandas as pd
 from scipy import stats
 
+import os
+os.chdir('/Applications/XAMPP/xamppfiles/htdocs/xampp/repos/random/seaborn_to_dash_conversion/other')
+
 app = dash.Dash()
 
 app.css.append_css(
     {"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
+
+colors = dict(
+    pace='#D9437D',
+    spin='#367D9F'
+)
 
 # Data 
 df = pd.read_csv('../usmaan_test_data.csv')
@@ -18,17 +26,21 @@ df['deliv'] = [n + 1 for n in range(len(df))]
 
 # drop null bounces
 df = df.dropna(subset=['bvrz']).copy()
-df.head()
+df.head(2)
 
 # bvrz values
 pace_bvrz_values = df.bvrz[df.pace == 1]
 pace_bvrz_values.head(2)
+
 spin_bvrz_values = df.bvrz[df.pace == 0]
 spin_bvrz_values.head(2)
 
 # value counts
 pace_deliv_values = df.deliv[df.pace == 1]
+pace_deliv_values.head(2)
+
 spin_deliv_values = df.deliv[df.pace == 0]
+spin_deliv_values.head(2)
 
 # regression values
 pace_slope, pace_intercept, pace_r_value, pace_p_value, pace_std_err = stats.linregress(
@@ -43,7 +55,7 @@ trace1 = go.Scatter(
     y=pace_bvrz_values,
     mode='markers',
     marker=dict(
-        color='#D9437D'
+        color=colors['pace']
     ),
     opacity=0.2,
     name='pace'
@@ -53,9 +65,11 @@ trace1 = go.Scatter(
 trace2 = go.Scatter(
     x=pace_deliv_values,
     y=pace_intercept + pace_slope * pace_deliv_values,
-    line=go.Line(width=4),
+    line=dict(
+        width=4
+    ),
     marker=dict(
-        color='#D9437D'
+        color=colors['pace']
     ),
     showlegend=False
 )
@@ -66,7 +80,7 @@ trace3 = go.Scatter(
     y=spin_bvrz_values,
     mode='markers',
     marker=dict(
-        color='#367D9F'
+        color=colors['spin']
     ),
     opacity=0.2,
     name='spin'
@@ -76,9 +90,11 @@ trace3 = go.Scatter(
 trace4 = go.Scatter(
     x=spin_deliv_values,
     y=spin_intercept + spin_slope * spin_deliv_values,
-    line=go.Line(width=4),
+    line=dict(
+        width=4
+    ),
     marker=dict(
-        color='#367D9F'
+        color=colors['spin']
     ),
     showlegend=False
 )
