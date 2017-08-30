@@ -2,8 +2,23 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
-import pandas as pd
-import statsmodels.api as sm
+
+from data import (
+    pace_deliv_values,
+    pace_bvrz_values,
+    pace_regression_x,
+    pace_regression_y,
+
+    spin_deliv_values,
+    spin_bvrz_values,
+    spin_regression_x,
+    spin_regression_y,
+
+    bvrz_min,
+    bvrz_max,
+
+    print_inning_lines
+)
 
 app = dash.Dash()
 
@@ -12,32 +27,6 @@ colors = dict(
     spin='#367D9F',
     over_line='#888886'
 )
-
-# Data
-df = pd.read_csv('../usmaan_test_data.csv')
-
-# add count of delivery number
-df['deliv'] = [n + 1 for n in range(len(df))]
-
-# drop null bounces
-df = df.dropna(subset=['bvrz']).copy()
-
-# bvrz values
-pace_bvrz_values = df.bvrz[df.pace == 1]
-spin_bvrz_values = df.bvrz[df.pace == 0]
-
-# value counts
-pace_deliv_values = df.deliv[df.pace == 1]
-spin_deliv_values = df.deliv[df.pace == 0]
-
-# local regression using LOWESS
-lowess = sm.nonparametric.lowess
-
-pace_regression_x = lowess(pace_bvrz_values, pace_deliv_values)[:, 0]
-pace_regression_y = lowess(pace_bvrz_values, pace_deliv_values)[:, 1]
-
-spin_regression_x = lowess(spin_bvrz_values, spin_deliv_values)[:, 0]
-spin_regression_y = lowess(spin_bvrz_values, spin_deliv_values)[:, 1]
 
 # pace scatter plot values
 trace1 = go.Scatter(
@@ -117,32 +106,9 @@ app.layout = html.Div(style={}, children=[
                 ),
                 yaxis=dict(
                     title='Bounce Velocity Ratio',
-                    range=[0.38, 0.75]
+                    range=[bvrz_min, bvrz_max]
                 ),
-                shapes=[
-                    {
-                        'type': 'line',
-                        'x0': 800,
-                        'y0': 0.4,
-                        'x1': 800,
-                        'y1': 0.8,
-                        'line': {
-                            'width': 1,
-                            'color': colors['over_line']
-                        }
-                    },
-                    {
-                        'type': 'line',
-                        'x0': 1100,
-                        'y0': 0.4,
-                        'x1': 1100,
-                        'y1': 0.8,
-                        'line': {
-                            'width': 1,
-                            'color': colors['over_line']
-                        }
-                    }
-                ]
+                shapes=print_inning_lines(color=colors['over_line'])
             )
         }
     )
