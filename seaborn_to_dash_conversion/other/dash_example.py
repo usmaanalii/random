@@ -9,7 +9,8 @@ app = dash.Dash()
 
 colors = dict(
     pace='#D9437D',
-    spin='#367D9F'
+    spin='#367D9F',
+    over_line='#888886'
 )
 
 # Data
@@ -44,7 +45,7 @@ trace1 = go.Scatter(
     marker=dict(
         color=colors['pace']
     ),
-    opacity=0.2,
+    opacity=0.3,
     name='pace'
 )
 
@@ -70,7 +71,7 @@ trace3 = go.Scatter(
     marker=dict(
         color=colors['spin']
     ),
-    opacity=0.2,
+    opacity=0.3,
     name='spin'
 )
 
@@ -125,7 +126,7 @@ app.layout = html.Div(style={}, children=[
                         'y1': 0.8,
                         'line': {
                             'width': 1,
-                            'color': '#888886'
+                            'color': colors['over_line']
                         }
                     },
                     {
@@ -136,7 +137,7 @@ app.layout = html.Div(style={}, children=[
                         'y1': 0.8,
                         'line': {
                             'width': 1,
-                            'color': '#888886'
+                            'color': colors['over_line']
                         }
                     }
                 ]
