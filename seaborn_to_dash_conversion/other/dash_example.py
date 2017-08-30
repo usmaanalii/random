@@ -3,7 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 import pandas as pd
-from scipy import stats
+import statsmodels.api as sm
 
 app = dash.Dash()
 
@@ -30,12 +30,14 @@ spin_bvrz_values = df.bvrz[df.pace == 0]
 pace_deliv_values = df.deliv[df.pace == 1]
 spin_deliv_values = df.deliv[df.pace == 0]
 
-# regression values
-pace_slope, pace_intercept, pace_r_value, pace_p_value, pace_std_err = stats.linregress(
-    pace_deliv_values, pace_bvrz_values)
+# local regression using LOWESS
+lowess = sm.nonparametric.lowess
 
-spin_slope, spin_intercept, spin_r_value, spin_p_value, spin_std_err = stats.linregress(
-    spin_deliv_values, spin_bvrz_values)
+pace_regression_x = lowess(pace_bvrz_values, pace_deliv_values)[:, 0]
+pace_regression_y = lowess(pace_bvrz_values, pace_deliv_values)[:, 1]
+
+spin_regression_x = lowess(spin_bvrz_values, spin_deliv_values)[:, 0]
+spin_regression_y = lowess(spin_bvrz_values, spin_deliv_values)[:, 1]
 
 # pace scatter plot values
 trace1 = go.Scatter(
@@ -43,7 +45,7 @@ trace1 = go.Scatter(
     y=pace_bvrz_values,
     mode='markers',
     marker=dict(
-        color=colors['pace']
+        color=colors['pace'],
     ),
     opacity=0.3,
     name='pace'
@@ -51,8 +53,8 @@ trace1 = go.Scatter(
 
 # pace regression line
 trace2 = go.Scatter(
-    x=pace_deliv_values,
-    y=pace_intercept + pace_slope * pace_deliv_values,
+    x=pace_regression_x,
+    y=pace_regression_y,
     line=dict(
         width=4
     ),
@@ -77,8 +79,8 @@ trace3 = go.Scatter(
 
 # spin regression line
 trace4 = go.Scatter(
-    x=spin_deliv_values,
-    y=spin_intercept + spin_slope * spin_deliv_values,
+    x=spin_regression_x,
+    y=spin_regression_y,
     line=dict(
         width=4
     ),
