@@ -2,13 +2,11 @@ import pandas as pd
 import numpy as np
 import statsmodels.api as sm
 import math
-
-from utilities import (
-    get_innings_changes
-)
+from sql import cur
+from utilities import get_innings_changes
 
 # Data
-df = pd.read_csv('../usmaan_test_data.csv')
+df = pd.DataFrame(cur.fetchall())
 
 # Add count of delivery number
 df['deliv'] = [n + 1 for n in range(len(df))]
