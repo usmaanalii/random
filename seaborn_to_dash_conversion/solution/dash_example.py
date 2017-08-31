@@ -6,13 +6,18 @@ import plotly.graph_objs as go
 from data import (
     pace_deliv_values,
     pace_bvrz_values,
+
     pace_regression_x,
     pace_regression_y,
 
     spin_deliv_values,
     spin_bvrz_values,
+
     spin_regression_x,
     spin_regression_y,
+
+    delivery_number_min,
+    delivery_number_max,
 
     bvrz_min,
     bvrz_max,
@@ -84,6 +89,9 @@ trace4 = go.Scatter(
     showlegend=False
 )
 
+# list[dicts]
+#   - represents a list of dicts, each dict contains the code to construct a
+#     single line
 inning_lines = print_inning_lines(innings_changovers, bvrz_min,
                                   bvrz_max, color=colors['over_line'])
 
@@ -106,10 +114,8 @@ app.layout = html.Div(style={}, children=[
             'layout': go.Layout(
                 xaxis=dict(
                     title='Match Delivery',
-                    autotick=False,
                     zeroline=False,
-                    tick0=0,
-                    dtick=200,
+                    range=[delivery_number_min - 50, delivery_number_max]
                 ),
                 yaxis=dict(
                     title='Bounce Velocity Ratio',
@@ -120,21 +126,6 @@ app.layout = html.Div(style={}, children=[
         }
     )
 ])
-
-# NOTE:
-#       - layout is composed of a tree of "components" like html.Div
-#       - dash_html_components provides html.H! -> <h1>...</h1> etc..
-#       - can generate components with html/css/js with interactivity
-#       - applications are described via keyword attributes
-#       - peep the children property html.H1(children=...) == html.H1(...)
-
-# * More about HTML
-# - dash_html_components -> component class for every HTML tag
-#                           keyword argument for all HTML arguments
-
-# - html.H1('Hello Dash', style={'textAlign': 'center', 'color': '#7FDFF'})
-#   becomes
-#   <h1 style="text-align: center; color: #7FDFF">Hello Dash</h1>
 
 if __name__ == '__main__':
     app.run_server(debug=True)
