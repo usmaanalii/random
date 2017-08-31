@@ -17,6 +17,10 @@ from data import (
     bvrz_min,
     bvrz_max,
 
+    innings_changovers
+)
+
+from utilities import (
     print_inning_lines
 )
 
@@ -80,6 +84,9 @@ trace4 = go.Scatter(
     showlegend=False
 )
 
+inning_lines = print_inning_lines(innings_changovers, bvrz_min,
+                                  bvrz_max, color=colors['over_line'])
+
 app.layout = html.Div(style={}, children=[
     html.H1(
         children='Cricviz Demo App',
@@ -108,7 +115,7 @@ app.layout = html.Div(style={}, children=[
                     title='Bounce Velocity Ratio',
                     range=[bvrz_min, bvrz_max]
                 ),
-                shapes=print_inning_lines(color=colors['over_line'])
+                shapes=inning_lines
             )
         }
     )
