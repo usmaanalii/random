@@ -1,18 +1,18 @@
-def get_innings_changes(data):
+def changeovers(items):
     """
     Used to retrieve a list of integers each of which represents the
-    delivery number at which the inning changes.
+    delivery number at which the innings/days change.
 
     @param data: dataframe representing the match data
     @return: list of integers
     """
-
-    delivery_numbers = []
-
-    for i in range(2, 1 + len(data.inn.unique())):
-        delivery_numbers.append(data[data.inn == i]['deliv'].idxmin())
-
-    return delivery_numbers
+    indexes = []
+    previous = items[0]
+    for index, x in enumerate(items):
+        if x != previous:
+            indexes.append(index)
+            previous = x
+    return indexes
 
 
 def print_inning_lines(delivery_numbers, y0, y1, color='grey'):

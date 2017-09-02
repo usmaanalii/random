@@ -2,14 +2,19 @@ import pandas as pd
 import numpy as np
 import statsmodels.api as sm
 import math
+import datetime
 from sql import cur
-from utilities import get_innings_changes
+from utilities import changeovers
 
 # Data
 df = pd.DataFrame(cur.fetchall())
 
 # Add count of delivery number
 df['deliv'] = [n + 1 for n in range(len(df))]
+
+# Change the format of the date column
+#   TODO: Is this the most optimal solution?
+df.date = df.date.apply(lambda x: x.date().strftime('%d-%m-%y'))
 
 # Drop null bounces
 df = df.dropna(subset=['bvrz']).copy()
@@ -44,4 +49,7 @@ bvrz_min = np.percentile(df['bvrz'], 1)
 bvrz_max = np.percentile(df['bvrz'], 99)
 
 # list of delivery numbers corrsponding to the change of innings
-innings_changovers = get_innings_changes(df)
+innings_changovers = changeovers(df.inn)
+
+# list of delivery numbers corrsponding to the change of day
+day_changeovers = changeovers(df.date)
