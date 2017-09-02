@@ -1,3 +1,4 @@
+# import os; os.chdir('/Applications/XAMPP/xamppfiles/htdocs/xampp/repos/random/seaborn_to_dash_conversion/solution')
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
