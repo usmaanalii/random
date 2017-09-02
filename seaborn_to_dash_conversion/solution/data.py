@@ -7,7 +7,8 @@ from sql import cur
 from utilities import changeovers
 
 # Data
-df = pd.DataFrame(cur.fetchall())
+data = cur.fetchall()
+df = pd.DataFrame(data)
 
 # Add count of delivery number
 df['deliv'] = [n + 1 for n in range(len(df))]
