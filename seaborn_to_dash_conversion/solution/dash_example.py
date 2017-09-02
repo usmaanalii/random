@@ -22,7 +22,8 @@ from data import (
     bvrz_min,
     bvrz_max,
 
-    innings_changovers
+    innings_changovers,
+    day_changeovers
 )
 
 from utilities import (
@@ -93,7 +94,10 @@ trace4 = go.Scatter(
 #   - represents a list of dicts, each dict contains the code to construct a
 #     single line
 inning_lines = print_inning_lines(innings_changovers, bvrz_min,
-                                  bvrz_max, color=colors['over_line'])
+                                  bvrz_max, color='blue')
+
+day_lines = print_inning_lines(day_changeovers, bvrz_min,
+                               bvrz_max, color='red')
 
 app.layout = html.Div(style={}, children=[
     html.H1(
@@ -121,7 +125,7 @@ app.layout = html.Div(style={}, children=[
                     title='Bounce Velocity Ratio',
                     range=[bvrz_min, bvrz_max]
                 ),
-                shapes=inning_lines
+                shapes=inning_lines + day_lines
             )
         }
     )
