@@ -2,10 +2,11 @@
 
 @app.callback(
     dash.dependencies.Output('example-graph', 'figure'),
-    [dash.dependencies.Input('match_ids', 'value')])
-def update_graph(match_id):
+    [dash.dependencies.Input('match-ids', 'value'),
+     dash.dependencies.Input('line-option', 'value')])
+def update_graph(match_id, line_option):
 
-    match_data = get_bounce_data(match_id)
+    match_data = get_bounce_data(int(match_id))
 
     ###################
     # Data Manipulation
@@ -44,9 +45,10 @@ def update_graph(match_id):
     spin_regression_y = lowess(spin_bvrz_values, spin_deliv_values)[:, 1]
 
     # x axis (delivery number) limits, rounded to the nearest 100
-    #   - TODO: This could be updated to round based on the number of deliveries,
-    #           for example, if there were 80 deliveries, round to the nearest 10
-    #           etc and so on...
+    #   - TODO: This could be updated to round based on the number of
+    #           deliveries, for example, if there were 80 deliveries,
+    #           round to the nearest
+    #           10 etc and so on...
     delivery_number_min = int(round(bounce_data_df.deliv.min(), -2))
     delivery_number_max = int(round(bounce_data_df.deliv.max(), -2))
 
@@ -59,6 +61,7 @@ def update_graph(match_id):
 
     # list of delivery numbers corrsponding to the change of day
     day_changeovers = changeovers(bounce_data_df.date)
+
     # pace scatter plot values
     trace1 = go.Scatter(
         x=pace_deliv_values,
@@ -115,24 +118,32 @@ def update_graph(match_id):
     #   - represents a list of dicts, each dict contains the code to construct
     #     a single line
     inning_lines = print_inning_lines(innings_changovers, bvrz_min,
-                                      bvrz_max, color='blue')
+                                      bvrz_max, colors['over_line'])
 
     day_lines = print_inning_lines(day_changeovers, bvrz_min,
-                                   bvrz_max, color='red')
+                                   bvrz_max, colors['over_line'])
 
-    return 'data': [trace1, trace2, trace3, trace4],
-    'layout': go.Layout(
-        xaxis=dict(
-            title='Match Delivery',
-            zeroline=False,
-            range=[delivery_number_min - 50, delivery_number_max]
-        ),
-        yaxis=dict(
-            title='Bounce Velocity Ratio',
-            range=[bvrz_min, bvrz_max]
-        ),
-        margin=dict(
-            t=20
-        ),
-        shapes=inning_lines + day_lines
-    )
+    # Takes the radio button value
+    if line_option == 'innings':
+        lines = inning_lines
+    else:
+        lines = day_lines
+
+    return {
+        'data': [trace1, trace2, trace3, trace4],
+        'layout': go.Layout(
+            xaxis=dict(
+                title='Match Delivery',
+                zeroline=False,
+                range=[delivery_number_min - 50, delivery_number_max]
+            ),
+            yaxis=dict(
+                title='Bounce Velocity Ratio',
+                range=[bvrz_min, bvrz_max]
+            ),
+            margin=dict(
+                t=20
+            ),
+            shapes=lines
+        )
+    }
