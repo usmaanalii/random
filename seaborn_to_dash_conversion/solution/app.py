@@ -171,14 +171,25 @@ app.layout = html.Div(style={}, children=[
               'display': 'inline-block',
               'padding-top': '5%'}),
 
+    dcc.RadioItems(
+        id='line-option',
+        options=[
+            {'label': 'Innings', 'value': 'innings'},
+            {'label': 'Days', 'value': 'days'}
+        ],
+        value='innings',
+        labelStyle={'display': 'inline-block'}
+    ),
+
     dcc.Graph(id='example-graph')
 ])
 
 
 @app.callback(
     dash.dependencies.Output('example-graph', 'figure'),
-    [dash.dependencies.Input('match-ids', 'value')])
-def update_graph(match_id):
+    [dash.dependencies.Input('match-ids', 'value'),
+     dash.dependencies.Input('line-option', 'value')])
+def update_graph(match_id, line_option):
 
     match_data = get_bounce_data(int(match_id))
 
@@ -297,6 +308,12 @@ def update_graph(match_id):
     day_lines = print_inning_lines(day_changeovers, bvrz_min,
                                    bvrz_max, colors['over_line'])
 
+    # Takes the radio button value
+    if line_option == 'innings':
+        lines = inning_lines
+    else:
+        lines = day_lines
+
     return {
         'data': [trace1, trace2, trace3, trace4],
         'layout': go.Layout(
@@ -312,7 +329,7 @@ def update_graph(match_id):
             margin=dict(
                 t=20
             ),
-            shapes=inning_lines
+            shapes=lines
         )
     }
 
