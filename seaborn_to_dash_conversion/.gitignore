@@ -1,6 +1,7 @@
 __pycache__
 usmaan_test_data.csv
 sql.py
+sql_utilities.py
 sql_play.py
 sql_returns
 random.py

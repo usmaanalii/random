@@ -3,30 +3,30 @@ import numpy as np
 import statsmodels.api as sm
 import math
 import datetime
-from sql import cur
+from sql import matches, match_data
 from utilities import changeovers
 
 # Data
-data = cur.fetchall()
-df = pd.DataFrame(data)
+matches_df = pd.DataFrame(matches)
+bounce_data_df = pd.DataFrame(match_data)
 
 # Add count of delivery number
-df['deliv'] = [n + 1 for n in range(len(df))]
+bounce_data_df['deliv'] = [n + 1 for n in range(len(bounce_data_df))]
 
 # Change the format of the date column
 #   TODO: Is this the most optimal solution?
-df.date = df.date.apply(lambda x: x.date().strftime('%d-%m-%y'))
+bounce_data_df.date = bounce_data_df.date.apply(lambda x: x.date().strftime('%d-%m-%y'))
 
 # Drop null bounces
-df = df.dropna(subset=['bvrz']).copy()
+bounce_data_df = bounce_data_df.dropna(subset=['bvrz']).copy()
 
 # bvrz values
-pace_bvrz_values = df.bvrz[df.pace == 1]
-spin_bvrz_values = df.bvrz[df.pace == 0]
+pace_bvrz_values = bounce_data_df.bvrz[bounce_data_df.pace == 1]
+spin_bvrz_values = bounce_data_df.bvrz[bounce_data_df.pace == 0]
 
 # deliv number counts
-pace_deliv_values = df.deliv[df.pace == 1]
-spin_deliv_values = df.deliv[df.pace == 0]
+pace_deliv_values = bounce_data_df.deliv[bounce_data_df.pace == 1]
+spin_deliv_values = bounce_data_df.deliv[bounce_data_df.pace == 0]
 
 # local regression method using LOWESS
 lowess = sm.nonparametric.lowess
@@ -42,15 +42,15 @@ spin_regression_y = lowess(spin_bvrz_values, spin_deliv_values)[:, 1]
 #   - TODO: This could be updated to round based on the number of deliveries,
 #           for example, if there were 80 deliveries, round to the nearest 10
 #           etc and so on...
-delivery_number_min = int(round(df.deliv.min(), -2))
-delivery_number_max = int(round(df.deliv.max(), -2))
+delivery_number_min = int(round(bounce_data_df.deliv.min(), -2))
+delivery_number_max = int(round(bounce_data_df.deliv.max(), -2))
 
 # y axis (bvrz) limits
-bvrz_min = np.percentile(df['bvrz'], 1)
-bvrz_max = np.percentile(df['bvrz'], 99)
+bvrz_min = np.percentile(bounce_data_df['bvrz'], 1)
+bvrz_max = np.percentile(bounce_data_df['bvrz'], 99)
 
 # list of delivery numbers corrsponding to the change of innings
-innings_changovers = changeovers(df.inn)
+innings_changovers = changeovers(bounce_data_df.inn)
 
 # list of delivery numbers corrsponding to the change of day
-day_changeovers = changeovers(df.date)
+day_changeovers = changeovers(bounce_data_df.date)
