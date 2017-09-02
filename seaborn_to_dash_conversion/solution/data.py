@@ -1,3 +1,4 @@
+# import os; os.chdir('/Applications/XAMPP/xamppfiles/htdocs/xampp/repos/random/seaborn_to_dash_conversion/solution')
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
@@ -6,8 +7,11 @@ import datetime
 from sql import matches, match_data
 from utilities import changeovers
 
+#############
+# Bounce data
+#############
+
 # Data
-matches_df = pd.DataFrame(matches)
 bounce_data_df = pd.DataFrame(match_data)
 
 # Add count of delivery number
@@ -54,3 +58,11 @@ innings_changovers = changeovers(bounce_data_df.inn)
 
 # list of delivery numbers corrsponding to the change of day
 day_changeovers = changeovers(bounce_data_df.date)
+
+#############
+# Match data
+#############
+
+# Data
+matches_df = pd.DataFrame(matches)
+match_ids = matches_df.id
