@@ -21,6 +21,7 @@ from utilities import (
 ######
 
 # Matches data for the dropdown
+#   [{id: ..., name: ...}, {...}, ...]
 matches = get_matches(10)
 
 ######
@@ -97,7 +98,6 @@ def update_graph(match_id, line_option):
     bounce_data_df['deliv'] = [n + 1 for n in range(len(bounce_data_df))]
 
     # Change the format of the date column
-    #   TODO: Is this the most optimal solution?
     bounce_data_df.date = bounce_data_df.date.apply(
         lambda x: x.date().strftime('%d-%m-%y'))
 
@@ -139,6 +139,10 @@ def update_graph(match_id, line_option):
 
     # list of delivery numbers corrsponding to the change of day
     day_changeovers = changeovers(bounce_data_df.date)
+
+    ################################################################
+    # Figure Data (Scatter Plots, Regression Lines & Vertical Lines)
+    ################################################################
 
     # pace scatter plot values
     trace1 = go.Scatter(
@@ -192,21 +196,18 @@ def update_graph(match_id, line_option):
         showlegend=False
     )
 
-    # list[dicts]
-    #   - represents a list of dicts, each dict contains the code to construct
-    #     a single line
+    # list of dicts
+    #   - each dict contains the code to construct a single line
     inning_lines = print_inning_lines(innings_changovers, bvrz_min,
                                       bvrz_max, colors['over_line'])
 
     day_lines = print_inning_lines(day_changeovers, bvrz_min,
                                    bvrz_max, colors['over_line'])
 
-    # Takes the radio button value
-    if line_option == 'innings':
-        lines = inning_lines
-    else:
-        lines = day_lines
+    # line_option corresponds to the radio button input value
+    lines = inning_lines if line_option == 'innings' else day_lines
 
+    # return value is set to the *figure* parameter of the graph
     return {
         'data': [trace1, trace2, trace3, trace4],
         'layout': go.Layout(
