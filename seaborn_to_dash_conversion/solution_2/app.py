@@ -52,21 +52,23 @@ app.layout = html.Div(style={}, children=[
         dcc.Dropdown(
             id='match-ids',
             options=[{'label': x['name'], 'value': x['id']} for x in matches],
-            value='193945'
-        )
-    ], style={'min-width': '48%',
-              'display': 'inline-block',
-              'padding-top': '5%'}),
-
-    dcc.RadioItems(
-        id='line-option',
-        options=[
-            {'label': 'Innings', 'value': 'innings'},
-            {'label': 'Days', 'value': 'days'}
-        ],
-        value='innings',
-        labelStyle={'display': 'inline-block'}
-    ),
+            value='193945',
+            placeholder='England v West Indies at Leeds, 2nd Test, \
+                         25-29 Aug 2017'
+        ),
+        html.Div(dcc.RadioItems(
+            id='line-option',
+            options=[
+                {'label': 'Innings', 'value': 'innings'},
+                {'label': 'Days', 'value': 'days'}
+            ],
+            value='innings',
+            labelStyle={'display': 'inline-block',
+                        'padding': '1%'}
+        ), style={'text-align': 'center'}),
+    ], style={'max-width': '30em',
+              'margin': '0 auto',
+              'padding-top': '1%'}),
 
     dcc.Graph(id='example-graph')
 ])
