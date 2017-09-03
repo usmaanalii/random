@@ -1,3 +1,6 @@
+from math import floor
+
+
 def changeovers(items):
     """
     Used to retrieve a list of integers each of which represents the
@@ -25,7 +28,8 @@ def print_inning_lines(delivery_numbers, y0, y1, color='grey'):
                              point on the x axis where the vertical line
                              should be placed
     @param y0: (integer), the lines starting point on the y axis
-    @param y1: (integer), the lines ending point on the y axis
+    @param y1: (integer), the lines ending point on the y axis (rounded down
+                          to the nearest 10th)
     @param color: (string), the color of the line
     @return: (list of dicts), each dict represents the code needed to
              generate a single line on the graph
@@ -39,7 +43,7 @@ def print_inning_lines(delivery_numbers, y0, y1, color='grey'):
                 'x0': number,
                 'y0': y0,
                 'x1': number,
-                'y1': y1,
+                'y1': floor(y1 * 100) / 100.0,
                 'line': {
                     'width': 1,
                     'color': color
