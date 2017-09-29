@@ -1,0 +1,1 @@
+Link can be found [here](https://blog.restsecured.xyz/writing-an-api-with-flask-restful-part-1-61b0e26e0e5b)
