@@ -67,7 +67,7 @@ def show_entries():
     db = get_db()
     cur = db.execute('select title, text from entries order by id desc')
     entries = cur.fetchall()
-    return render_template('show_entries.html', entries=entries)
+    return render_template('show_entries.html.nunjucks', entries=entries)
 
 
 @app.route('/add', methods=['POST'])
@@ -94,7 +94,7 @@ def login():
             session['logged_in'] = True
             flash('You were logged in')
             return redirect(url_for('show_entries'))
-    return render_template('login.html', error=error)
+    return render_template('login.html.nunjucks', error=error)
 
 
 @app.route('/logout')

@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout.html.nunjucks" %}
 
 {% block body %}
   <h2>Login</h2>
