@@ -1,8 +1,11 @@
 import random
+import json
 from flask import Flask, render_template
 
 app = Flask(__name__, static_folder='../static/dist',
             template_folder='../static')
+
+app.debug = True
 
 
 @app.route('/')
@@ -21,7 +24,7 @@ def hello():
 
 def get_hello():
     greeting_list = ['Ciao', 'Hei', 'Salut', 'Hola', 'Hallo', 'Hej']
-    return random.choice(greeting_list)
+    return json.dumps({'hello': random.choice(greeting_list)})
 
 
 if __name__ == '__main__':
